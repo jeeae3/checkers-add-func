@@ -7,7 +7,6 @@ import pygame
 from SecondMenu import SecondMenu
 from constants import BLUE, YELLOW, RED, GREEN
 from ScoreManager import ScoreManager
-from SecondMenu import SecondMenu
 
 
 pygame.init()
@@ -23,8 +22,12 @@ pygame.display.set_caption("Checkers+")
 tracks = ["music/Track1.mp3", "music/Track2.mp3", "music/Track3.mp3", "music/Track4.mp3", "music/Track5.mp3", "music/Track6.mp3", "music/Track7.mp3", "music/Track8.mp3"] # can add more or delete tracks if we do not like them
 current_track = 0
 SONG_END = pygame.USEREVENT + 1
-second_menu = SecondMenu(tracks)
 
+# timer
+timerOptions = [30200, 10200, 5200] # in milliseconds (30.2s, 10.2s, 5.2s)
+current_timer = 0
+
+second_menu = SecondMenu(tracks, timerOptions, current_timer)
 
 def music_loop():
     """
@@ -38,6 +41,15 @@ def music_loop():
 
 music_loop()
 pygame.mixer.music.set_endevent(SONG_END) # create event for song ending/looping
+
+def timer_loop():
+    """
+    The timer loop function loops through the timer option in the timerOptions list.
+    """
+    global current_timer
+    current_timer = (current_timer + 1) % len(timerOptions)
+
+timer_loop()
 
 # title for display
 game_title = "Checkers+"
@@ -463,6 +475,8 @@ def settings():
                     else:
                         music_loop()  # Start the music from next song in tracklist
                         music_playing = True
+                if button_rect_6.collidepoint(event.pos):
+                    timer_loop()
             elif event.type == SONG_END and music_playing == True:
                 music_loop()
 
