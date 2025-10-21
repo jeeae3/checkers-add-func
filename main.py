@@ -271,7 +271,18 @@ def menu_buttons():
     screen.blit(board_icon_resized, board_icon_rect.topleft)  # Draw the icon after drawing the button
     screen.blit(button_text, button_text_rect)
 
-    return button_rect, button_rect_2, button_rect_3, button_rect_4, button_rect_5
+    # Used to indicate if cursor is hovering over button. If so, button will be darker
+    mouse = pygame.mouse.get_pos()
+    button_rect_6 = pygame.Rect(position, size)
+    if button_rect_6.collidepoint(mouse):
+        pygame.draw.rect(screen, cursor_color, button_rect_6)  # Change color when cursor hovered over
+    else:
+        pygame.draw.rect(screen, color, button_rect_6) # stay original color if cursor not hovering over
+
+    screen.blit(board_icon_resized, board_icon_rect.topleft)  # Draw the icon after drawing the button
+    screen.blit(button_text, button_text_rect)
+
+    return button_rect, button_rect_2, button_rect_3, button_rect_4, button_rect_5, button_rect_6
 
 def tutorial(): 
     """
@@ -412,6 +423,21 @@ def settings():
     settings_screen.blit(music_icon_resized, music_icon_rect.topleft)  # Draw the icon after drawing the button
     settings_screen.blit(button_text, button_text_rect)
     button_rect_5 = pygame.Rect(position, size)
+
+    # Timer Button
+    timer_icon = pygame.image.load('pics/timer_icon.png')
+    position = (Width // 2 - 350, Height // 5 + button_height + spacing)
+    size = (700, button_height)
+    button_text = button_font.render("Timer (Beginner/Intermediate/Advanced)", True, (255, 255, 255))  # Button text and color
+    button_text_rect = button_text.get_rect(center=(Width // 2, Height // 5 + button_height + spacing + button_height // 2))
+
+    timer_icon_resized = pygame.transform.scale(timer_icon, icon_size)
+    timer_icon_rect = timer_icon_resized.get_rect(topleft=(Width // 2 - 350 + 10, Height // 5 + button_height + spacing + (button_height - icon_size[1]) // 2))
+
+    pygame.draw.rect(settings_screen, color, pygame.Rect(position, size))
+    settings_screen.blit(timer_icon_resized, timer_icon_rect.topleft)  # Draw the icon after drawing the button
+    settings_screen.blit(button_text, button_text_rect)
+    button_rect_6 = pygame.Rect(position, size)
 
     # Exit button to return back to menu
     exit_button_font = pygame.font.Font(None, 32)
