@@ -26,8 +26,9 @@ SONG_END = pygame.USEREVENT + 1
 # timer
 timerOptions = [30200, 10200, 5200] # in milliseconds (30.2s, 10.2s, 5.2s)
 current_timer = 0
+display_timer_choice = 0
 
-second_menu = SecondMenu(tracks, timerOptions, current_timer)
+second_menu = SecondMenu(tracks, timerOptions, current_timer) #default timer is 30 secs
 
 def music_loop():
     """
@@ -74,7 +75,6 @@ credits_rect1 = credits_text1.get_rect(center=(Width // 2, 650))
 credits_text2 = credits_font.render(credits2, True, (255, 255, 255))
 credits_rect2 = credits_text2.get_rect(center=(Width // 2, 670))
 
-second_menu_instance = SecondMenu(tracks)
 def main():
     """
     The main function is the main menu of the game. It displays the title, message, and credits, and holds user interaction with buttons. 
@@ -90,7 +90,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 buttons = menu_buttons()
                 if buttons[0].collidepoint(event.pos): # If Start Game button is clicked, show the second menu
-                   second_menu_instance.start_game_menu()
+                   second_menu.start_game_menu()
                 if buttons[2].collidepoint(event.pos): # if mouse is clicked on tutorial button
                     tutorial()
                 elif buttons[1].collidepoint(event.pos): # if mouse is clicked on settings button
@@ -440,7 +440,8 @@ def settings():
     timer_icon = pygame.image.load('pics/timer_icon.png')
     position = (Width // 2 - 350, Height // 5 + button_height + spacing)
     size = (700, button_height)
-    button_text = button_font.render("Timer (Beginner/Intermediate/Advanced)", True, (255, 255, 255))  # Button text and color
+    display_timer_choice = timerOptions[current_timer] // 1000  # Convert to seconds
+    button_text = button_font.render(f"Timer (Beginner/Intermediate/Advanced) set to {display_timer_choice}s", True, (255, 255, 255))  # Button text and color
     button_text_rect = button_text.get_rect(center=(Width // 2, Height // 5 + button_height + spacing + button_height // 2))
 
     timer_icon_resized = pygame.transform.scale(timer_icon, icon_size)
@@ -477,6 +478,15 @@ def settings():
                         music_playing = True
                 if button_rect_6.collidepoint(event.pos):
                     timer_loop()
+                    second_menu.current_timer = current_timer #updates timer in game
+                    # Update timer button text after click
+                    display_timer_choice = timerOptions[current_timer] // 1000
+                    button_text = button_font.render(f"Timer Beginner/Intermediate/Advanced) set to {display_timer_choice}s", True, (255, 255, 255))
+                    button_text_rect = button_text.get_rect(center=(Width // 2, Height // 5 + button_height + spacing + button_height // 2))
+                    pygame.draw.rect(settings_screen, color, pygame.Rect(position, size))
+                    settings_screen.blit(timer_icon_resized, timer_icon_rect.topleft)
+                    settings_screen.blit(button_text, button_text_rect)
+                    pygame.display.update()
             elif event.type == SONG_END and music_playing == True:
                 music_loop()
 
@@ -589,13 +599,13 @@ def board_customization():
                 if exit_button_rect.collidepoint(event.pos):  # if exit settings button is clicked
                     return
                 if red_square_rect.collidepoint(event.pos): # make board red
-                    second_menu_instance.color = RED
+                    second_menu.color = RED
                 if blue_square_rect.collidepoint(event.pos): # make board blue
-                    second_menu_instance.color = BLUE
+                    second_menu.color = BLUE
                 if yellow_square_rect.collidepoint(event.pos): # make board yellow
-                    second_menu_instance.color = YELLOW
+                    second_menu.color = YELLOW
                 if green_square_rect.collidepoint(event.pos): # make board green
-                    second_menu_instance.color = GREEN
+                    second_menu.color = GREEN
             elif event.type == SONG_END:
                 music_loop()
 

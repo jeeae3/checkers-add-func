@@ -41,10 +41,10 @@ class SecondMenu:
     The class also has three functions, start_game_menu, start_game_vs_player, and start_game_vs_computer.
     """
     
-    def __init__(self, track, timer_options=None, current_timer=0):
+    def __init__(self, track, timerOptions=None, current_timer=0):
         self.selected_music_track = track
         self.background_music = BackgroundMusic([track])
-        self.timer_options = timer_options or [30200, 10200, 5200]
+        self.timerOptions = timerOptions or [30200, 10200, 5200]
         self.current_timer = current_timer
     
     color = RED
@@ -195,7 +195,7 @@ class SecondMenu:
         """
         run = True
         clock = pygame.time.Clock()
-        game = Game(screen, self.color, player1_name.username, player2_name.username, self.timer_options[self.current_timer])
+        game = Game(screen, self.color, player1_name.username, player2_name.username, self.timerOptions[self.current_timer])
         global score_manager, user_scores
 
         # Exit Button
@@ -242,7 +242,7 @@ class SecondMenu:
         """
         run = True
         clock = pygame.time.Clock()
-        game = Game(screen, self.color, player1_name.username, "Computer", self.timer_options[self.current_timer])
+        game = Game(screen, self.color, player1_name.username, "Computer", self.timerOptions, self.current_timer)
         global score_manager, user_scores
 
         # Exit Button
