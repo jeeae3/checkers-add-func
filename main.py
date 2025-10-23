@@ -330,11 +330,17 @@ def news():
 
     # Get latest tweet data only when function is called
     try:
-        from news import TwitterNews
-        twitter_news = TwitterNews()
-        latest_tweet = twitter_news.user_tweets.data[0].text if twitter_news.user_tweets and twitter_news.user_tweets.data else "No tweets available"
+        from news import user_tweets
+        print(f"Debug - user_tweets: {user_tweets}")
+        print(f"Debug - user_tweets.data: {user_tweets.data if user_tweets else 'None'}")
+        if user_tweets and user_tweets.data:
+            latest_tweet = user_tweets.data[0].text
+            print(f"Debug - Got tweet: {latest_tweet[:50]}...")
+        else:
+            latest_tweet = "No tweets available - Check console for details"
     except Exception as e:
-        latest_tweet = f"Error loading tweets: {str(e)}"
+        latest_tweet = f"Error: {str(e)[:50]}..."
+        print(f"Full error: {e}")
     
     news_font = pygame.font.Font(None, 24)
     news_text = news_font.render(latest_tweet[:100] + "...", True, (255, 255, 255))  # Truncate long tweets
