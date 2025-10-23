@@ -7,7 +7,6 @@ import pygame
 from SecondMenu import SecondMenu
 from constants import BLUE, YELLOW, RED, GREEN
 from ScoreManager import ScoreManager
-from SecondMenu import SecondMenu
 
 
 pygame.init()
@@ -23,8 +22,13 @@ pygame.display.set_caption("Checkers+")
 tracks = ["music/Track1.mp3", "music/Track2.mp3", "music/Track3.mp3", "music/Track4.mp3", "music/Track5.mp3", "music/Track6.mp3", "music/Track7.mp3", "music/Track8.mp3"] # can add more or delete tracks if we do not like them
 current_track = 0
 SONG_END = pygame.USEREVENT + 1
-second_menu = SecondMenu(tracks)
 
+# timer
+timerOptions = [30200, 10200, 5200] # in milliseconds (30.2s, 10.2s, 5.2s)
+current_timer = 0
+display_timer_choice = 0
+
+second_menu = SecondMenu(tracks, timerOptions, current_timer) #default timer is 30 secs
 
 def music_loop():
     """
@@ -38,6 +42,15 @@ def music_loop():
 
 music_loop()
 pygame.mixer.music.set_endevent(SONG_END) # create event for song ending/looping
+
+def timer_loop():
+    """
+    The timer loop function loops through the timer option in the timerOptions list.
+    """
+    global current_timer
+    current_timer = (current_timer + 1) % len(timerOptions)
+
+timer_loop()
 
 # title for display
 game_title = "Checkers+"
@@ -62,7 +75,6 @@ credits_rect1 = credits_text1.get_rect(center=(Width // 2, 650))
 credits_text2 = credits_font.render(credits2, True, (255, 255, 255))
 credits_rect2 = credits_text2.get_rect(center=(Width // 2, 670))
 
-second_menu_instance = SecondMenu(tracks)
 def main():
     """
     The main function is the main menu of the game. It displays the title, message, and credits, and holds user interaction with buttons. 
@@ -78,7 +90,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 buttons = menu_buttons()
                 if buttons[0].collidepoint(event.pos): # If Start Game button is clicked, show the second menu
-                   second_menu_instance.start_game_menu()
+                   second_menu.start_game_menu()
                 if buttons[2].collidepoint(event.pos): # if mouse is clicked on tutorial button
                     tutorial()
                 elif buttons[1].collidepoint(event.pos): # if mouse is clicked on settings button
@@ -271,7 +283,18 @@ def menu_buttons():
     screen.blit(board_icon_resized, board_icon_rect.topleft)  # Draw the icon after drawing the button
     screen.blit(button_text, button_text_rect)
 
-    return button_rect, button_rect_2, button_rect_3, button_rect_4, button_rect_5
+    # Used to indicate if cursor is hovering over button. If so, button will be darker
+    mouse = pygame.mouse.get_pos()
+    button_rect_6 = pygame.Rect(position, size)
+    if button_rect_6.collidepoint(mouse):
+        pygame.draw.rect(screen, cursor_color, button_rect_6)  # Change color when cursor hovered over
+    else:
+        pygame.draw.rect(screen, color, button_rect_6) # stay original color if cursor not hovering over
+
+    screen.blit(board_icon_resized, board_icon_rect.topleft)  # Draw the icon after drawing the button
+    screen.blit(button_text, button_text_rect)
+
+    return button_rect, button_rect_2, button_rect_3, button_rect_4, button_rect_5, button_rect_6
 
 def tutorial(): 
     """
@@ -413,6 +436,22 @@ def settings():
     settings_screen.blit(button_text, button_text_rect)
     button_rect_5 = pygame.Rect(position, size)
 
+    # Timer Button
+    timer_icon = pygame.image.load('pics/timer_icon.png')
+    position = (Width // 2 - 350, Height // 5 + button_height + spacing)
+    size = (700, button_height)
+    display_timer_choice = timerOptions[current_timer] // 1000  # Convert to seconds
+    button_text = button_font.render(f"Timer (Beginner/Intermediate/Advanced) set to {display_timer_choice}s", True, (255, 255, 255))  # Button text and color
+    button_text_rect = button_text.get_rect(center=(Width // 2, Height // 5 + button_height + spacing + button_height // 2))
+
+    timer_icon_resized = pygame.transform.scale(timer_icon, icon_size)
+    timer_icon_rect = timer_icon_resized.get_rect(topleft=(Width // 2 - 350 + 10, Height // 5 + button_height + spacing + (button_height - icon_size[1]) // 2))
+
+    pygame.draw.rect(settings_screen, color, pygame.Rect(position, size))
+    settings_screen.blit(timer_icon_resized, timer_icon_rect.topleft)  # Draw the icon after drawing the button
+    settings_screen.blit(button_text, button_text_rect)
+    button_rect_6 = pygame.Rect(position, size)
+
     # Exit button to return back to menu
     exit_button_font = pygame.font.Font(None, 32)
     exit_button_text = exit_button_font.render("Exit Settings", True, (255, 255, 255))
@@ -437,6 +476,17 @@ def settings():
                     else:
                         music_loop()  # Start the music from next song in tracklist
                         music_playing = True
+                if button_rect_6.collidepoint(event.pos):
+                    timer_loop()
+                    second_menu.current_timer = current_timer #updates timer in game
+                    # Update timer button text after click
+                    display_timer_choice = timerOptions[current_timer] // 1000
+                    button_text = button_font.render(f"Timer Beginner/Intermediate/Advanced) set to {display_timer_choice}s", True, (255, 255, 255))
+                    button_text_rect = button_text.get_rect(center=(Width // 2, Height // 5 + button_height + spacing + button_height // 2))
+                    pygame.draw.rect(settings_screen, color, pygame.Rect(position, size))
+                    settings_screen.blit(timer_icon_resized, timer_icon_rect.topleft)
+                    settings_screen.blit(button_text, button_text_rect)
+                    pygame.display.update()
             elif event.type == SONG_END and music_playing == True:
                 music_loop()
 
@@ -549,13 +599,13 @@ def board_customization():
                 if exit_button_rect.collidepoint(event.pos):  # if exit settings button is clicked
                     return
                 if red_square_rect.collidepoint(event.pos): # make board red
-                    second_menu_instance.color = RED
+                    second_menu.color = RED
                 if blue_square_rect.collidepoint(event.pos): # make board blue
-                    second_menu_instance.color = BLUE
+                    second_menu.color = BLUE
                 if yellow_square_rect.collidepoint(event.pos): # make board yellow
-                    second_menu_instance.color = YELLOW
+                    second_menu.color = YELLOW
                 if green_square_rect.collidepoint(event.pos): # make board green
-                    second_menu_instance.color = GREEN
+                    second_menu.color = GREEN
             elif event.type == SONG_END:
                 music_loop()
 
