@@ -97,6 +97,8 @@ def main():
                     settings()
                 elif buttons[4].collidepoint(event.pos): # if mouse is clicked on leaderboard button (not yet implemented)
                     board_customization()
+                elif buttons[5].collidepoint(event.pos):
+                    news()
                 # Check if the current song has finished, loop to next song
             elif event.type == SONG_END:
                 music_loop()
@@ -283,6 +285,27 @@ def menu_buttons():
     screen.blit(board_icon_resized, board_icon_rect.topleft)  # Draw the icon after drawing the button
     screen.blit(button_text, button_text_rect)
 
+    # Customize News button
+    board_icon = pygame.image.load('pics/news_icon.png')
+
+    color = (200, 100, 100)# soft red
+    cursor_color = (150, 50, 50) # darker red
+    position = (Width // 2 - 150, Height // 3 - 100)  # Adjust the vertical position as needed
+    size = (300, 50)  # width, height
+
+    button_font = pygame.font.Font(None, 32)
+    button_text = button_font.render("Read News", True, (255, 255, 255)) # Button text and color
+    button_text_rect = button_text.get_rect(center=(Width // 2, Height // 3 - 75))  # Adjust the vertical position as needed
+    pygame.draw.rect(screen, color, pygame.Rect(position, size))
+    screen.blit(button_text, button_text_rect)
+
+    # Draw the icon next to the text with the specified size
+    board_icon_resized = pygame.transform.scale(board_icon, icon_size)
+    board_icon_rect = board_icon_resized.get_rect(topleft=(Width // 2 - 150 + 10, Height // 3 - 100 + (button_height - icon_size[1]) // 2))
+
+    pygame.draw.rect(screen, color, pygame.Rect(position, size))
+    screen.blit(button_text, button_text_rect)
+    
     # Used to indicate if cursor is hovering over button. If so, button will be darker
     mouse = pygame.mouse.get_pos()
     button_rect_6 = pygame.Rect(position, size)
@@ -295,6 +318,35 @@ def menu_buttons():
     screen.blit(button_text, button_text_rect)
 
     return button_rect, button_rect_2, button_rect_3, button_rect_4, button_rect_5, button_rect_6
+
+def news():
+    # Used for buttons w/ images
+    icon_size = (45, 45)  # Adjust the size of the icon as needed
+    button_height = 50
+    spacing = 10
+
+    news_screen = pygame.display.set_mode([Width, Height])
+    news_screen.fill((128, 128, 128))
+
+    # Exit button to return back to menu
+    exit_button_font = pygame.font.Font(None, 32)
+    exit_button_text = exit_button_font.render("Exit News", True, (255, 255, 255))
+    exit_button_rect = exit_button_text.get_rect(center=(Width // 2, Height - 50))
+    pygame.draw.rect(news_screen, (64, 64, 64), exit_button_rect.inflate(20, 10))
+    news_screen.blit(exit_button_text, exit_button_rect)
+
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if exit_button_rect.collidepoint(event.pos):  # if exit tutorial button is clicked
+                    return  # exit tutorial and return to menu
+            elif event.type == SONG_END:
+                music_loop()
 
 def tutorial(): 
     """
