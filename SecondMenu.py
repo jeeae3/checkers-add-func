@@ -195,7 +195,7 @@ class SecondMenu:
         """
         run = True
         clock = pygame.time.Clock()
-        game = Game(screen, self.color, player1_name.username, player2_name.username, self.timerOptions[self.current_timer])
+        game = Game(screen, self.color, player1_name.username, player2_name.username, self.timerOptions, self.current_timer)
         global score_manager, user_scores
 
         # Exit Button
