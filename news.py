@@ -33,12 +33,12 @@ if user_response.status_code == 200:
     user_name = user_data['data']['name']
     
     # Get tweets
-    user_tweets = client.get_users_tweets(id=user_id, max_results=10)
+    user_tweets = client.get_users_tweets(id=user_id, max_results=5)
     
     if user_tweets.data:
         print(f"Most recent tweet: {user_tweets.data[0].text}")
 else:
-    print("Failed to get user data")
+    print(f"Failed to get user data. Error code: {user_response.status_code}")
     user_data = None
     user_id = None
     user_name = None

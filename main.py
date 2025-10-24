@@ -328,6 +328,9 @@ def news():
     news_screen = pygame.display.set_mode([Width, Height])
     news_screen.fill((128, 128, 128))
 
+    news_title_screen = pygame.display.set_mode([Width, Height])
+    news_title_screen.fill((128, 128, 128))
+
     # Get latest tweet data only when function is called
     try:
         from news import user_tweets
@@ -341,10 +344,15 @@ def news():
     except Exception as e:
         latest_tweet = f"Error: {str(e)[:50]}..."
         print(f"Full error: {e}")
+
+    news_title_font = pygame.font.Font(None, 64)
+    news_title_text = news_title_font.render("Read the latest news!", True, (255, 255, 255))
+    news_title_rect = news_title_text.get_rect(center=(Width // 2, 50))
+    news_title_screen.blit(news_title_text, news_title_rect)
     
     news_font = pygame.font.Font(None, 24)
     news_text = news_font.render(latest_tweet[:100] + "...", True, (255, 255, 255))  # Truncate long tweets
-    news_rect = news_text.get_rect(center=(Width // 2, 50))
+    news_rect = news_text.get_rect(center=(Width // 2, 150))
     news_screen.blit(news_text, news_rect)
 
     # Exit button to return back to menu
